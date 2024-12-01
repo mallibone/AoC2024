@@ -50,8 +50,8 @@ getInput 01
 let computeSimilarity (left : string array) right =
     left |> Array.map (fun x -> (right |> Array.filter (fun y -> x = y) |> Array.length) * int x)
     |> Array.sum
-// getInput 1 
-getTestInput 1
+getInput 1 
+// getTestInput 1
 |> parseInput
 |> Array.transpose
 |> fun x -> computeSimilarity x[0] x[1]

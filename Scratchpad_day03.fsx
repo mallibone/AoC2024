@@ -46,6 +46,14 @@ getInput 3
 |> Array.sum
 
 // part 2
-// getInput 3
-// getTestInput 3
+let removeOperations (inputLine:string) =
+    let pattern = @"don't\(\).*?do\(\)"
+    Regex.Replace(inputLine, pattern, "gna", RegexOptions.IgnoreCase)
+    |> fun x -> Regex.Replace(x, @"don't\(\).*?$", "gna", RegexOptions.IgnoreCase)
 
+getInput 3
+// getTestInput 3
+|> (fun x -> String.concat "gna" x)
+|> removeOperations
+|> parseMultiplications
+|> Array.sum

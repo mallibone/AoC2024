@@ -78,16 +78,16 @@ getInput 4
 let getXCandidates (input : string array array) (x:int,y:int) =
     let candidates = 
         [
-            [(x-1,y-1);(x,y);(x+3,y+1);];
-            [(x+1,y+1);(x,y);(x-1,y+1);];
-            [(x-1,y+1);(x,y);(x+1,y+1);];
-            [(x+1,y-1);(x,y);(x-1,y-1);];
+            [(x-1,y-1);(x,y);(x+1,y+1);];
+            [(x+1,y+1);(x,y);(x-1,y-1);];
+            [(x-1,y+1);(x,y);(x+1,y-1);];
+            [(x+1,y-1);(x,y);(x-1,y+1);];
 
         ]
         |> List.map (fun c -> c |> List.filter (fun (x,y) -> x >= 0 && y >= 0 && x < input[0].Length && y < input.Length))
-        |> List.filter (fun c -> c |> List.length = 4)
+        |> List.filter (fun c -> c |> List.length = 3)
         |> List.map (fun coords -> coords |> List.map(fun (x,y)-> input[y][x]) |> fun l -> String.Join("", l), coords)
-        // |> List.filter (fun (s,_) -> s = "MAS")
+        |> List.filter (fun (s,_) -> s = "MAS")
         |> List.toArray
 
     candidates
@@ -100,11 +100,11 @@ let findXXmasOccurences (input:string array array) =
     let masOccurences =
         xmasCandidateCoords
         |> Array.map (fun coord -> getXCandidates input coord)
-        // |> Array.filter (fun x -> x |> Array.length = 2)
+        |> Array.filter (fun x -> x |> Array.length = 2)
     masOccurences
-// getInput 4
 
-getTestInput 4
+getInput 4
+// getTestInput 4
 |> Array.map parseInput
 |> findXXmasOccurences
 |> Array.length

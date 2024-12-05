@@ -11,8 +11,8 @@ x=$(printf "%02d" "$1")
 
 # Define file paths
 input_dir="Input"
-test_file="${input_dir}/TestDay$1.txt"
-day_file="${input_dir}/Day$1.txt"
+test_file="${input_dir}/TestDay${x}.txt"
+day_file="${input_dir}/Day${x}.txt"
 scratchpad_src="Scratchpad_day00.fsx"
 scratchpad_dest="Scratchpad_day${x}.fsx"
 
@@ -27,4 +27,4 @@ touch "$test_file" "$day_file"
 
 # Copy and modify the scratchpad file
 cp "$scratchpad_src" "$scratchpad_dest"
-sed -i '' "s36,42/20/${x}/g" "$scratchpad_dest"
+sed -i '' "s/20/$1/g" "$scratchpad_dest"

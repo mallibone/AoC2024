@@ -44,15 +44,18 @@ let parseInput (inputLines:string array) =
         |> Array.map (fun x -> x.Split(",") |> Array.map int)
     rules, pages
 
+let isRuleValid page rule =
+    let ruleId, ruleValues = rule
+    let indexOfId = page |> Array.findIndex (fun x -> x = ruleId)
+    let indexOfValues = ruleValues |> Array.map(fun r -> page |> Array.tryFindIndex (fun x -> x = r)) |> Array.choose id
+    (indexOfValues |> Array.forall(fun v -> v > indexOfId))
+
 let validatePage (rules: (int * int array) array) (page:int array) =
     let rec validatePage' (rules: (int * int array) array) (page:int array) =
         match rules with
         | [||] -> true
         | _ -> 
-            let ruleId, ruleValues = rules[0]
-            let indexOfId = page |> Array.findIndex (fun x -> x = ruleId)
-            let indexOfValues = ruleValues |> Array.map(fun r -> page |> Array.tryFindIndex (fun x -> x = r)) |> Array.choose id
-            if indexOfValues |> Array.forall(fun v -> v > indexOfId) then
+            if isRuleValid page rules[0] then
                 validatePage' rules[1..] page
             else
                 false
@@ -60,37 +63,27 @@ let validatePage (rules: (int * int array) array) (page:int array) =
     validatePage' rulesThatApply page
 
 // part 1
-let findValidPages ((rules: (int * int array) array), pages : (int array array)) =
-    pages |> Array.filter (validatePage rules)
 
 getInput 5
 // getTestInput 5
 |> parseInput
-|> findValidPages
+|> (fun (r,p) -> p |> Array.filter (validatePage r))
 |> Array.map(fun x -> x[x.Length / 2])
 |> Array.sum
 
 // part 2
-let findInvalidPages ((rules: (int * int array) array), pages : (int array array)) =
-    rules, pages |> Array.filter (fun x -> validatePage rules x |> not)
-
 let fixInvalidPage (rules: (int * int array) array) (page:int array) =
-    let isRuleInvalid page rule =
-        let ruleId, ruleValues = rule
-        let indexOfId = page |> Array.findIndex (fun x -> x = ruleId)
-        let indexOfValues = ruleValues |> Array.map(fun r -> page |> Array.tryFindIndex (fun x -> x = r)) |> Array.choose id
-        (indexOfValues |> Array.forall(fun v -> v > indexOfId)) |> not
 
     let rec fixInvalidPage' page rules =
         match rules with
         | [||] -> page
         | _ -> 
-            let ruleId, ruleValues = rules[0]
-            let indexOfId = page |> Array.findIndex (fun x -> x = ruleId)
-            let indexOfValues = ruleValues |> Array.map(fun r -> page |> Array.tryFindIndex (fun x -> x = r)) |> Array.choose id
-            if indexOfValues |> Array.forall(fun v -> v > indexOfId) then
+            if isRuleValid page rules[0] then
                 fixInvalidPage' page rules.[1..]
             else
+                let ruleId, ruleValues = rules[0]
+                let indexOfId = page |> Array.findIndex (fun x -> x = ruleId)
+                let indexOfValues = ruleValues |> Array.map(fun r -> page |> Array.tryFindIndex (fun x -> x = r)) |> Array.choose id
                 let invalidIndex = indexOfValues |> Array.findIndex(fun v -> v <= indexOfId)
                 let temp = page.[indexOfId]
                 page.[indexOfId] <- page.[indexOfValues.[invalidIndex]]
@@ -100,7 +93,7 @@ let fixInvalidPage (rules: (int * int array) array) (page:int array) =
     let fixedPages = 
         rules 
         |> Array.filter (fun (k, _) -> page |> Array.exists (fun x -> x = k))
-        |> Array.filter (isRuleInvalid page)
+        |> Array.filter (isRuleValid page >> not)
         |> (fixInvalidPage' page)
 
     fixedPages
@@ -108,7 +101,7 @@ let fixInvalidPage (rules: (int * int array) array) (page:int array) =
 getInput 5
 // getTestInput 5
 |> parseInput
-|> findInvalidPages
+|> (fun (r,p) -> r, p |> Array.filter ((validatePage r) >> not))
 |> (fun (r,p) -> 
     let rec loop currentPage =
         let fixedPage = fixInvalidPage r (currentPage |> Array.copy)

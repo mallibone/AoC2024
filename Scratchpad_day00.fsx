@@ -9,12 +9,12 @@ open FSharp.Collections.ParallelSeq
 open System.Collections.Concurrent
 
 let getTestInput (day:int) =
-    let filename = Path.Combine(__SOURCE_DIRECTORY__, $"Input/TestDay{day}.txt")
+    let filename = Path.Combine(__SOURCE_DIRECTORY__, $"Input/TestDay{day:D2}.txt")
     File.ReadAllLines(filename)
     // File.ReadAllText(filename)
 
 let getInput (day:int) =
-    let filename = Path.Combine(__SOURCE_DIRECTORY__, $"Input/Day{day}.txt")
+    let filename = Path.Combine(__SOURCE_DIRECTORY__, $"Input/Day{day:D2}.txt")
     File.ReadAllLines(filename)
     // File.ReadAllText(filename)
 

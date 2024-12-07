@@ -1,12 +1,8 @@
 #time
 #r "nuget: FSharp.Collections.ParallelSeq, 1.2.0"
 open System.IO
-open System.Text.RegularExpressions
 open System
-open System.Linq
-open System.Collections.Generic
 open FSharp.Collections.ParallelSeq
-open System.Collections.Concurrent
 
 let getTestInput (day:int) =
     let filename = Path.Combine(__SOURCE_DIRECTORY__, $"Input/TestDay{day:D2}.txt")
@@ -50,4 +46,3 @@ getInput 7
 |> Array.map parseInput
 |> PSeq.collect (validFormulaCount (fun head x -> [x + head; x * head; (string x + string head) |> int64]))
 |> PSeq.sum
-

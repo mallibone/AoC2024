@@ -1,12 +1,6 @@
 #time
 #r "nuget: FSharp.Collections.ParallelSeq, 1.2.0"
 open System.IO
-open System.Text.RegularExpressions
-open System
-open System.Linq
-open System.Collections.Generic
-open FSharp.Collections.ParallelSeq
-open System.Collections.Concurrent
 
 let getTestInput (day:int) =
     let filename = Path.Combine(__SOURCE_DIRECTORY__, $"Input/TestDay{day:D2}.txt")
@@ -71,15 +65,15 @@ let rec findLastFileIndex index (diskSpace:int64 array array) =
     else
         index
 
-let rec findFirstFileWithFreeSpace index (diskSpace:int64 array array) (fileSize:int) =
+let rec findFirstFileWithFreeSpace index maxIndex (diskSpace:int64 array array) (fileSize:int) =
     let freeSpaceAtIndex = diskSpace[index] |> Array.filter ((=) -1) |> Array.length
     if  freeSpaceAtIndex >= fileSize  then
         index, diskSpace[index].Length - freeSpaceAtIndex
     else
-        if index = diskSpace.Length - 1 then
+        if index = maxIndex then
             index+1, -1
         else
-            findFirstFileWithFreeSpace (index + 1) diskSpace fileSize
+            findFirstFileWithFreeSpace (index + 1) maxIndex diskSpace fileSize
 
 let compressFiles (diskSpace:int64 array array) =
     let rec compressFiles' index (diskSpace:int64 array array) =
@@ -92,7 +86,7 @@ let compressFiles (diskSpace:int64 array array) =
             else
 
                 let fileSize = (file |> Array.filter ((=) file[0]) |> Array.length)
-                let targetIndex, freeSpaceIndex = findFirstFileWithFreeSpace 0 diskSpace fileSize
+                let targetIndex, freeSpaceIndex = findFirstFileWithFreeSpace 0 index diskSpace fileSize
                 if targetIndex > index then
                     compressFiles' (index - 1) diskSpace
                 else
